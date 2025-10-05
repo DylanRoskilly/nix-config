@@ -31,6 +31,7 @@ in
     # js
     nodejs
     typescript
+    typescript-language-server
     pnpm
     prettier
     eslint
@@ -46,6 +47,7 @@ in
     # cli
     bashInteractive
     eza
+    dua
   ];
 
   home.shellAliases = {
@@ -69,6 +71,9 @@ in
     enable = true;
     themeFile = "OneDark";
     font = font;
+    settings = {
+      disable_ligatures = "always";
+    };
   };
 
   programs.tmux = {
@@ -89,6 +94,11 @@ in
     '';
   };
 
+  # programs.zellij = {
+  #   enable = true;
+  #   enableZshIntegration = true;
+  # };
+
   programs.zoxide = {
     enable = true;
     enableZshIntegration = true;
@@ -100,6 +110,7 @@ in
     userEmail = secrets.gitEmail;
     extraConfig = {
       core.editor = "code --wait";
+      credential.helper = "osxkeychain";
     };
     ignores = [ ".DS_Store" ];
     delta = {
@@ -121,7 +132,23 @@ in
 
   programs.helix = {
     enable = true;
-    settings.theme = "gruvbox";
+    settings = {
+      theme = "catppuccin_macchiato";
+      editor = {
+        end-of-line-diagnostics = "hint";
+        inline-diagnostics = {
+          cursor-line = "hint";
+          other-lines = "hint";
+        };
+        line-number = "relative";
+        auto-format = true;
+        cursor-shape = {
+          insert = "bar";
+          normal = "block";
+          select = "underline";
+        };
+      };
+    };
   };
 
   programs.vscode = {
@@ -164,6 +191,7 @@ in
         yzhang.markdown-all-in-one
 
         # tools
+        saoudrizwan.claude-dev
         usernamehw.errorlens
         dnut.rewrap-revived
         gruntfuggly.todo-tree
