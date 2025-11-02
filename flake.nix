@@ -1,7 +1,7 @@
 {
   description = "Home Manager Development Environment Configuration";
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+    nixpkgs.url = "github:NixOS/nixpkgs";
     home-manager = {
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -31,9 +31,8 @@
       };
       secrets = import ./secrets.nix;
       mkHome =
-        name:
+        system:
         let
-          system = systemMap.${name};
           pkgs = import nixpkgs {
             inherit system;
             overlays = [ nix-vscode-extensions.overlays.default ];
@@ -50,9 +49,6 @@
         };
     in
     {
-      homeConfigurations = {
-        linux = mkHome "linux";
-        macos = mkHome "macos";
-      };
+      homeConfigurations = builtins.mapAttrs (name: system: mkHome system) systemMap;
     };
 }

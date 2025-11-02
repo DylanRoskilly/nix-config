@@ -111,23 +111,26 @@ in
 
   programs.git = {
     enable = true;
-    userName = secrets.gitUserName;
-    userEmail = secrets.gitEmail;
-    extraConfig = {
-      core.editor = "code --wait";
-      credential.helper = if pkgs.stdenv.isDarwin then "osxkeychain" else "libsecret";
-    };
-    ignores = [ ".DS_Store" ];
-    delta = {
-      enable = true;
-      options = {
-        line-numbers = true;
-        navigate = true;
-        hunk-header-style = "omit";
-        file-style = "bold blue";
-        syntax-theme = "TwoDark";
+    settings = {
+      user = secrets.git;
+      extraConfig = {
+        core.editor = "code --wait";
+        credential.helper = if pkgs.stdenv.isDarwin then "osxkeychain" else "libsecret";
       };
     };
+    ignores = [ ".DS_Store" ];
+  };
+
+  programs.delta = {
+    enable = true;
+    options = {
+      line-numbers = true;
+      navigate = true;
+      hunk-header-style = "omit";
+      file-style = "bold blue";
+      syntax-theme = "TwoDark";
+    };
+    enableGitIntegration = true;
   };
 
   programs.btop = {
