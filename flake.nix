@@ -1,12 +1,7 @@
 {
-  description = "MacOS System Configuration";
-
+  description = "Home Manager Development Environment Configuration";
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
-    nix-darwin = {
-      url = "github:LnL7/nix-darwin";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
     home-manager = {
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -20,46 +15,44 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
-
   outputs =
-    inputs@{
+    {
       self,
       nixpkgs,
-      nix-darwin,
       home-manager,
       nix-vscode-extensions,
       mac-app-util,
+      ...
     }:
     let
+      systemMap = {
+        linux = "x86_64-linux";
+        macos = "aarch64-darwin";
+      };
       secrets = import ./secrets.nix;
-      system = "aarch64-darwin";
-      pkgs = import nixpkgs {
-        inherit system;
-        overlays = [ nix-vscode-extensions.overlays.default ];
-      };
-      darwinConfig = import ./nix-darwin.nix {
-        inherit pkgs self secrets;
-      };
-      homeManagerConfig = import ./home.nix {
-        inherit pkgs self secrets;
-      };
+      mkHome =
+        name:
+        let
+          system = systemMap.${name};
+          pkgs = import nixpkgs {
+            inherit system;
+            overlays = [ nix-vscode-extensions.overlays.default ];
+            config.allowUnfree = true;
+          };
+        in
+        home-manager.lib.homeManagerConfiguration {
+          inherit pkgs;
+          extraSpecialArgs = { inherit secrets self system; };
+          modules = [
+            ./home.nix
+          ]
+          ++ (if pkgs.stdenv.isDarwin then [ mac-app-util.homeManagerModules.default ] else [ ]);
+        };
     in
     {
-      darwinConfigurations.${secrets.hostname} = nix-darwin.lib.darwinSystem {
-        inherit system;
-        modules = [
-          darwinConfig
-          mac-app-util.darwinModules.default
-          home-manager.darwinModules.home-manager
-          {
-            home-manager.backupFileExtension = "backup";
-            home-manager.useGlobalPkgs = true;
-            home-manager.useUserPackages = true;
-            home-manager.verbose = true;
-            home-manager.sharedModules = [ mac-app-util.homeManagerModules.default ];
-            home-manager.users.${secrets.username} = homeManagerConfig;
-          }
-        ];
+      homeConfigurations = {
+        linux = mkHome "linux";
+        macos = mkHome "macos";
       };
     };
 }

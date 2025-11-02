@@ -2,53 +2,63 @@
   pkgs,
   self,
   secrets,
+  system,
   ...
 }:
 let
   font = {
-    name = "JetBrains Mono";
+    name = "Berkeley Mono";
     size = 15;
   };
+  homeDirPrefix = if pkgs.stdenv.hostPlatform.isDarwin then "/Users" else "/home";
 in
 {
   home.stateVersion = "23.05";
 
-  home.packages = with pkgs; [
-    # rust
-    rustc
-    cargo
-    rustfmt
-    clippy
-    rust-analyzer
-    cargo-nextest
+  home.username = secrets.username;
+  home.homeDirectory = "/${homeDirPrefix}/${secrets.username}";
 
-    # python
-    python3
-    uv
-    mypy
-    ruff
+  home.packages =
+    with pkgs;
+    [
+      # rust
+      rustc
+      cargo
+      rustfmt
+      clippy
+      rust-analyzer
+      cargo-nextest
+      cargo-insta
 
-    # js
-    nodejs
-    typescript
-    typescript-language-server
-    pnpm
-    prettier
-    eslint
+      # python
+      python3
+      uv
+      mypy
+      ruff
 
-    # nix
-    nil
-    nixfmt-rfc-style
+      # js
+      nodejs
+      typescript
+      typescript-language-server
+      pnpm
+      prettier
+      eslint
 
-    # typst
-    typst
-    tinymist
+      # nix
+      nil
+      nixfmt-rfc-style
 
-    # cli
-    bashInteractive
-    eza
-    dua
-  ];
+      # typst
+      typst
+      tinymist
+
+      # cli
+      bashInteractive
+      eza
+      direnv
+      dua
+    ]
+    ++ (if pkgs.stdenv.isLinux then [ libsecret ] else [ ]);
 
   home.shellAliases = {
     ls = "eza -a";
@@ -94,11 +104,6 @@ in
     '';
   };
 
-  # programs.zellij = {
-  #   enable = true;
-  #   enableZshIntegration = true;
-  # };
-
   programs.zoxide = {
     enable = true;
     enableZshIntegration = true;
@@ -110,7 +115,7 @@ in
     userEmail = secrets.gitEmail;
     extraConfig = {
       core.editor = "code --wait";
-      credential.helper = "osxkeychain";
+      credential.helper = if pkgs.stdenv.isDarwin then "osxkeychain" else "libsecret";
     };
     ignores = [ ".DS_Store" ];
     delta = {
