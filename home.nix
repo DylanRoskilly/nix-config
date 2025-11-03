@@ -81,12 +81,15 @@ in
     enableZshIntegration = true;
   };
 
-  programs.kitty = {
+  programs.alacritty = {
     enable = true;
-    themeFile = "OneDark";
-    font = font;
+    theme = "one_dark";
     settings = {
-      disable_ligatures = "always";
+      font = {
+        normal.family = font.name;
+        size = font.size;
+      };
+      cursor.style.shape = "Beam";
     };
   };
 
