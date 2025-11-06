@@ -76,11 +76,6 @@ in
     };
   };
 
-  programs.direnv = {
-    enable = true;
-    enableZshIntegration = true;
-  };
-
   programs.alacritty = {
     enable = true;
     theme = "one_dark";
@@ -90,25 +85,17 @@ in
         size = font.size;
       };
       cursor.style.shape = "Beam";
+      window.startup_mode = "Maximized";
     };
   };
 
-  programs.tmux = {
+  programs.zellij = {
     enable = true;
-    extraConfig = ''
-      set -g mouse on
-
-      # map prefix to C-a
-      unbind C-b
-      set-option -g prefix C-a
-      bind-key C-a send-prefix
-
-      # fix colours
-      set -g default-terminal "xterm-256color"
-      set -ga terminal-overrides ",*256col*:Tc"
-      set -ga terminal-overrides '*:Ss=\E[%p1%d q:Se=\E[ q'
-      set-environment -g COLORTERM "truecolor"
-    '';
+    enableZshIntegration = true;
+    settings = {
+      theme = "onedark";
+      show_startup_tips = false;
+    };
   };
 
   programs.zoxide = {
@@ -126,6 +113,11 @@ in
       };
     };
     ignores = [ ".DS_Store" ];
+  };
+
+  programs.direnv = {
+    enable = true;
+    enableZshIntegration = true;
   };
 
   programs.delta = {

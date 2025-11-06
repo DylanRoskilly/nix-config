@@ -9,7 +9,7 @@ Nix flakes require all files referenced by the flake to be tracked in Git. The
 `pre-commit` hook prevents accidentally committing `secrets.nix`:
 
 ```bash
-$ cp pre-commit .git/hooks/pre-commit
+cp pre-commit .git/hooks/pre-commit
 ```
 
 ## Usage
