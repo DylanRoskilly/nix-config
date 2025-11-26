@@ -56,6 +56,7 @@ in
       # cli
       bashInteractive
       eza
+      zathura
     ]
     ++ (if pkgs.stdenv.isLinux then [ libsecret ] else [ ]);
 
@@ -167,7 +168,7 @@ in
         "extensions.autoCheckUpdates" = false;
 
         # appearance
-        "workbench.colorTheme" = "Dark+";
+        "workbench.colorTheme" = "One Dark Pro";
         "workbench.iconTheme" = "material-icon-theme";
         "editor.fontFamily" = font.name;
         "editor.fontSize" = font.size;
@@ -180,14 +181,28 @@ in
         "files.trimFinalNewlines" = true;
         "files.autoSave" = "onFocusChange";
 
-        # extensions
-        "rust-analyzer.lens.enable" = false;
+        # rewrap
         "rewrap.autoWrap.enabled" = true;
         "rewrap.wrappingColumn" = 80;
+
+        # rust
+        "rust-analyzer.lens.enable" = false;
+
+        # python
+        "[python]" = {
+          "editor.defaultFormatter" = "charliermarsh.ruff";
+          "editor.codeActionsOnSave" = {
+            "source.fixAll" = "explicit";
+            "source.organizeImports" = "explicit";
+          };
+        };
+        "ruff.nativeServer" = "auto";
+        "ruff.showSyntaxErrors" = true;
       };
       extensions = with pkgs.vscode-marketplace; [
         # themes
         pkief.material-icon-theme
+        zhuangtongfa.material-theme
 
         # lsp
         myriad-dreamin.tinymist
@@ -196,12 +211,14 @@ in
         tamasfe.even-better-toml
         zxh404.vscode-proto3
         yzhang.markdown-all-in-one
+        ms-python.vscode-pylance
 
         # tools
-        saoudrizwan.claude-dev
+        charliermarsh.ruff
         usernamehw.errorlens
-        dnut.rewrap-revived
+        saoudrizwan.claude-dev
         gruntfuggly.todo-tree
+        dnut.rewrap-revived
       ];
     };
   };
